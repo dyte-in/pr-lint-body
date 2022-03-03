@@ -63,8 +63,8 @@ function run() {
         const title = (_b = (_a = githubContext.payload.pull_request) === null || _a === void 0 ? void 0 : _a.title) !== null && _b !== void 0 ? _b : "";
         const body = (_d = (_c = githubContext.payload.pull_request) === null || _c === void 0 ? void 0 : _c.body) !== null && _d !== void 0 ? _d : "";
         const comment = onFailedRegexCommentInput.replace("%regex%", titleRegex.source);
-        core.debug(`Title Regex: ${titleRegex.source}`);
-        core.debug(`Title: ${title}`);
+        core.info(`Title Regex: ${titleRegex.source}`);
+        core.info(`Title: ${title}`);
         const titleMatchesRegex = titleRegex.test(title);
         if (!titleMatchesRegex) {
             if (onFailedRegexCreateReviewInput) {
@@ -73,6 +73,7 @@ function run() {
             if (onFailedRegexFailActionInput) {
                 core.setFailed(comment);
             }
+            core.error(`Failing title: ${title}`);
         }
         else {
             core.debug(`Regex pass`);
@@ -84,13 +85,17 @@ function run() {
         }
         if (bodyRegexInput) {
             const bodyRegex = new RegExp(bodyRegexInput);
-            if (bodyRegex.test(body)) {
+            core.info(`Body Regex: ${titleRegex.source}`);
+            core.info(`Body: ${body}`);
+            if (!bodyRegex.test(body)) {
+                const bodyComment = onFailedRegexCommentInput.replace("%regex%", bodyRegex.source);
                 if (onFailedRegexCreateReviewInput) {
-                    createReview(comment, pullRequest);
+                    createReview(bodyComment, pullRequest);
                 }
                 if (onFailedRegexFailActionInput) {
-                    core.setFailed(comment);
+                    core.setFailed(bodyComment);
                 }
+                core.error(`Failing body: ${body}`);
             }
             else {
                 core.debug(`Regex pass`);
