@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: dyte-in/pr-lint-action@main
         with:
-          title-regex: "^s(?<type>build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|¯\\\\_\\(ツ\\)_\\/¯)(?<scope>\\(\\w+\\)?((?=:\\s)|(?=!:\\s)))?(?<breaking>!)?(?<subject>:\\s.*)?|^(?<merge>Merge \\w+)"
+          title-regex: "^(?<type>build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|¯\\\\_\\(ツ\\)_\\/¯)(?<scope>\\(\\w+\\)?((?=:\\s)|(?=!:\\s)))?(?<breaking>!)?(?<subject>:\\s.*)?|^(?<merge>Merge \\w+)"
           body-regex: "^\\[[A-Z]+-\\d+\\]"
           on-failed-regex-fail-action: false
           on-failed-regex-create-review: true
