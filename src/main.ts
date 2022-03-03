@@ -36,8 +36,8 @@ async function run(): Promise<void> {
     titleRegex.source
   );
 
-  core.debug(`Title Regex: ${titleRegex.source}`);
-  core.debug(`Title: ${title}`);
+  core.info(`Title Regex: ${titleRegex.source}`);
+  core.info(`Title: ${title}`);
 
   const titleMatchesRegex: boolean = titleRegex.test(title);
   if (!titleMatchesRegex) {
@@ -47,7 +47,7 @@ async function run(): Promise<void> {
     if (onFailedRegexFailActionInput) {
       core.setFailed(comment);
     }
-    core.debug(`Failing title: ${title}`);
+    core.error(`Failing title: ${title}`);
   } else {
     core.debug(`Regex pass`);
     if (onFailedRegexCreateReviewInput) {
@@ -59,14 +59,20 @@ async function run(): Promise<void> {
 
   if (bodyRegexInput) {
     const bodyRegex = new RegExp(bodyRegexInput);
-    if (bodyRegex.test(body)) {
+    core.info(`Body Regex: ${titleRegex.source}`);
+    core.info(`Body: ${body}`);
+    if (!bodyRegex.test(body)) {
+      const bodyComment = onFailedRegexCommentInput.replace(
+        "%regex%",
+        bodyRegex.source
+      );
       if (onFailedRegexCreateReviewInput) {
-        createReview(comment, pullRequest);
+        createReview(bodyComment, pullRequest);
       }
       if (onFailedRegexFailActionInput) {
-        core.setFailed(comment);
+        core.setFailed(bodyComment);
       }
-      core.debug(`Failing body: ${body}`);
+      core.error(`Failing body: ${body}`);
     } else {
       core.debug(`Regex pass`);
       if (onFailedRegexCreateReviewInput) {
