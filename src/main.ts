@@ -57,7 +57,7 @@ async function run(): Promise<void> {
     }
   }
 
-  if (bodyRegexInput) {
+  if (bodyRegexInput && titleMatchesRegex) {
     const bodyRegex = new RegExp(bodyRegexInput);
     core.info(`Body Regex: ${titleRegex.source}`);
     core.info(`Body: ${body}`);

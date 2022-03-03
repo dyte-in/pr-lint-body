@@ -83,7 +83,7 @@ function run() {
                 core.debug(`Review dimissed`);
             }
         }
-        if (bodyRegexInput) {
+        if (bodyRegexInput && titleMatchesRegex) {
             const bodyRegex = new RegExp(bodyRegexInput);
             core.info(`Body Regex: ${titleRegex.source}`);
             core.info(`Body: ${body}`);
