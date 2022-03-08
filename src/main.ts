@@ -124,13 +124,17 @@ async function dismissReview(pullRequest: {
             body: onSucceededRegexDismissReviewComment,
           });
         } else {
-          octokit.rest.pulls.dismissReview({
-            owner: pullRequest.owner,
-            repo: pullRequest.repo,
-            pull_number: pullRequest.number,
-            review_id: review.id,
-            message: onSucceededRegexDismissReviewComment,
-          });
+          try {
+            octokit.rest.pulls.dismissReview({
+              owner: pullRequest.owner,
+              repo: pullRequest.repo,
+              pull_number: pullRequest.number,
+              review_id: review.id,
+              message: onSucceededRegexDismissReviewComment,
+            });
+          } catch(err) {
+            core.warning(`Something went wrong dismissing review: ${err}`)
+          }
         }
       }
     }
