@@ -66,7 +66,7 @@ function createReview(
     owner: pullRequest.owner,
     repo: pullRequest.repo,
     pull_number: pullRequest.number,
-    body: comment,
+    body: `body-linter: ${comment}`,
     event: onFailedRegexRequestChanges ? "REQUEST_CHANGES" : "COMMENT",
   });
 }
@@ -83,11 +83,12 @@ async function dismissReview(pullRequest: {
   });
 
   reviews.data.forEach(
-    (review: { id: number; user: { login: string } | null; state: string }) => {
+    (review: { id: number; user: { login: string } | null; state: string; body: string; }) => {
       if (
         review.user != null &&
         isGitHubActionUser(review.user.login) &&
-        alreadyRequiredChanges(review.state)
+        alreadyRequiredChanges(review.state) &&
+        review.body.startsWith("body-linter:")
       ) {
         core.debug(`Already required changes`);
         if (review.state === "COMMENTED") {
