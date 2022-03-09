@@ -4,9 +4,6 @@ import * as github from "@actions/github";
 const repoTokenInput = core.getInput("repo-token", { required: true });
 const octokit = github.getOctokit(repoTokenInput);
 
-const titleRegexInput: string = core.getInput("title-regex", {
-  required: true,
-});
 const bodyRegexInput: string = core.getInput("body-regex", {
   required: false,
 });
@@ -27,59 +24,36 @@ async function run(): Promise<void> {
   const githubContext = github.context;
   const pullRequest = githubContext.issue;
 
-  const titleRegex = new RegExp(titleRegexInput);
-  const title: string =
-    (githubContext.payload.pull_request?.title as string) ?? "";
   const body: string = githubContext.payload.pull_request?.body ?? "";
+  const bodyRegex = new RegExp(bodyRegexInput);
   const comment = onFailedRegexCommentInput.replace(
     "%regex%",
-    titleRegex.source
+    bodyRegex.source
   );
 
-  core.info(`Title Regex: ${titleRegex.source}`);
-  core.info(`Title: ${title}`);
+  core.info(`Body Regex: ${bodyRegex.source}`);
 
-  const titleMatchesRegex: boolean = titleRegex.test(title);
-  if (!titleMatchesRegex) {
+  if (!body) {
+    core.warning("Body is empty!");
+  } else {
+    core.info(`Body: ${body}`);
+  }
+
+  const bodyMatchesRegex: boolean = bodyRegex.test(body);
+  if (!bodyMatchesRegex) {
     if (onFailedRegexCreateReviewInput) {
       createReview(comment, pullRequest);
     }
     if (onFailedRegexFailActionInput) {
       core.setFailed(comment);
     }
-    core.error(`Failing title: ${title}`);
+    core.info((body && `Failing body: ${body}`) ?? "Body is empty!");
   } else {
     core.debug(`Regex pass`);
     if (onFailedRegexCreateReviewInput) {
       core.debug(`Dismissing review`);
       await dismissReview(pullRequest);
       core.debug(`Review dimissed`);
-    }
-  }
-
-  if (bodyRegexInput && titleMatchesRegex) {
-    const bodyRegex = new RegExp(bodyRegexInput);
-    core.info(`Body Regex: ${titleRegex.source}`);
-    core.info(`Body: ${body}`);
-    if (!bodyRegex.test(body)) {
-      const bodyComment = onFailedRegexCommentInput.replace(
-        "%regex%",
-        bodyRegex.source
-      );
-      if (onFailedRegexCreateReviewInput) {
-        createReview(bodyComment, pullRequest);
-      }
-      if (onFailedRegexFailActionInput) {
-        core.setFailed(bodyComment);
-      }
-      core.error(`Failing body: ${body}`);
-    } else {
-      core.debug(`Regex pass`);
-      if (onFailedRegexCreateReviewInput) {
-        core.debug(`Dismissing review`);
-        await dismissReview(pullRequest);
-        core.debug(`Review dimissed`);
-      }
     }
   }
 }
@@ -132,8 +106,8 @@ async function dismissReview(pullRequest: {
               review_id: review.id,
               message: onSucceededRegexDismissReviewComment,
             });
-          } catch(err) {
-            core.warning(`Something went wrong dismissing review: ${err}`)
+          } catch (err) {
+            core.warning(`Something went wrong dismissing review: ${err}`);
           }
         }
       }

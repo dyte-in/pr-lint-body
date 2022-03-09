@@ -1,7 +1,7 @@
 {
-  "name": "pr-lint-action",
-  "version": "1.6.1",
-  "description": "A GitHub Action to ensure that your PR title matches a given regex.",
+  "name": "pr-lint-body",
+  "version": "0.2.0",
+  "description": "A GitHub Action to ensure that your PR body matches a given regex.",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dyte-in/pr-lint-action"
+    "url": "git+https://github.com/dyte-in/pr-lint-body"
   },
   "keywords": [
     "actions",
@@ -29,9 +29,9 @@
   ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dyte-in/pr-lint-action/issues"
+    "url": "https://github.com/dyte-in/pr-lint-body/issues"
   },
-  "homepage": "https://github.com/dyte-in/pr-lint-action#readme",
+  "homepage": "https://github.com/dyte-in/pr-lint-body#readme",
   "dependencies": {
     "@actions/core": "1.6.0",
     "@actions/github": "5.0.0"

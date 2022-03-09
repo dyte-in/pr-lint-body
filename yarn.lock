@@ -1715,9 +1715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pr-lint-action@workspace:.":
+"pr-lint-body@workspace:.":
   version: 0.0.0-use.local
-  resolution: "pr-lint-action@workspace:."
+  resolution: "pr-lint-body@workspace:."
   dependencies:
     "@actions/core": 1.6.0
     "@actions/github": 5.0.0

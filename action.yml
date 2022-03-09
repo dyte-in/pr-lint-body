@@ -1,14 +1,10 @@
 name: "Pull Request Linter"
-description: "Ensure your PR titles match a given regex."
-author: "MorrisonCole"
+description: "Ensure your PR bodies match a given regex."
+author: "SphericalKat"
 branding:
   icon: "check"
   color: "green"
 inputs:
-  title-regex:
-    description: "Regex to ensure PR title matches. Allows anything by default."
-    required: true
-    default: ".*"
   body-regex:
     description: "Regex to ensure a match is found in the body. Allows anything by default."
     required: false
@@ -18,7 +14,7 @@ inputs:
       "Whether the action should create a PR review & comment when the regex
       doesn't match."
     required: false
-    default: true
+    default: "true"
   on-failed-regex-comment:
     description:
       "Comment for the bot to post on PRs that fail the regex. Use %regex% to
@@ -28,12 +24,12 @@ inputs:
   on-failed-regex-fail-action:
     description: "Whether the action should fail when the regex doesn't match."
     required: false
-    default: false
+    default: "false"
   on-failed-regex-request-changes:
     description:
       "Whether the action should request changes or just provide a comment."
     required: false
-    default: true
+    default: "true"
   on-succeeded-regex-dismiss-review-comment:
     description:
       "Comment for the bot to post on PRs that succeed the regex and have their

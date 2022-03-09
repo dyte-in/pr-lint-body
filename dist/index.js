@@ -43,9 +43,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const repoTokenInput = core.getInput("repo-token", { required: true });
 const octokit = github.getOctokit(repoTokenInput);
-const titleRegexInput = core.getInput("title-regex", {
-    required: true,
-});
 const bodyRegexInput = core.getInput("body-regex", {
     required: false,
 });
@@ -55,25 +52,29 @@ const onFailedRegexFailActionInput = core.getInput("on-failed-regex-fail-action"
 const onFailedRegexRequestChanges = core.getInput("on-failed-regex-request-changes") === "true";
 const onSucceededRegexDismissReviewComment = core.getInput("on-succeeded-regex-dismiss-review-comment");
 function run() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const githubContext = github.context;
         const pullRequest = githubContext.issue;
-        const titleRegex = new RegExp(titleRegexInput);
-        const title = (_b = (_a = githubContext.payload.pull_request) === null || _a === void 0 ? void 0 : _a.title) !== null && _b !== void 0 ? _b : "";
-        const body = (_d = (_c = githubContext.payload.pull_request) === null || _c === void 0 ? void 0 : _c.body) !== null && _d !== void 0 ? _d : "";
-        const comment = onFailedRegexCommentInput.replace("%regex%", titleRegex.source);
-        core.info(`Title Regex: ${titleRegex.source}`);
-        core.info(`Title: ${title}`);
-        const titleMatchesRegex = titleRegex.test(title);
-        if (!titleMatchesRegex) {
+        const body = (_b = (_a = githubContext.payload.pull_request) === null || _a === void 0 ? void 0 : _a.body) !== null && _b !== void 0 ? _b : "";
+        const bodyRegex = new RegExp(bodyRegexInput);
+        const comment = onFailedRegexCommentInput.replace("%regex%", bodyRegex.source);
+        core.info(`Body Regex: ${bodyRegex.source}`);
+        if (!body) {
+            core.warning("Body is empty!");
+        }
+        else {
+            core.info(`Body: ${body}`);
+        }
+        const bodyMatchesRegex = bodyRegex.test(body);
+        if (!bodyMatchesRegex) {
             if (onFailedRegexCreateReviewInput) {
                 createReview(comment, pullRequest);
             }
             if (onFailedRegexFailActionInput) {
                 core.setFailed(comment);
             }
-            core.error(`Failing title: ${title}`);
+            core.info((_c = (body && `Failing body: ${body}`)) !== null && _c !== void 0 ? _c : "Body is empty!");
         }
         else {
             core.debug(`Regex pass`);
@@ -81,29 +82,6 @@ function run() {
                 core.debug(`Dismissing review`);
                 yield dismissReview(pullRequest);
                 core.debug(`Review dimissed`);
-            }
-        }
-        if (bodyRegexInput && titleMatchesRegex) {
-            const bodyRegex = new RegExp(bodyRegexInput);
-            core.info(`Body Regex: ${titleRegex.source}`);
-            core.info(`Body: ${body}`);
-            if (!bodyRegex.test(body)) {
-                const bodyComment = onFailedRegexCommentInput.replace("%regex%", bodyRegex.source);
-                if (onFailedRegexCreateReviewInput) {
-                    createReview(bodyComment, pullRequest);
-                }
-                if (onFailedRegexFailActionInput) {
-                    core.setFailed(bodyComment);
-                }
-                core.error(`Failing body: ${body}`);
-            }
-            else {
-                core.debug(`Regex pass`);
-                if (onFailedRegexCreateReviewInput) {
-                    core.debug(`Dismissing review`);
-                    yield dismissReview(pullRequest);
-                    core.debug(`Review dimissed`);
-                }
             }
         }
     });
