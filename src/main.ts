@@ -7,6 +7,9 @@ const octokit = github.getOctokit(repoTokenInput);
 const bodyRegexInput: string = core.getInput("body-regex", {
   required: false,
 });
+const bodyRegexFlagsInput: string = core.getInput("body-regex-flags", {
+  required: false,
+});
 const onFailedRegexCreateReviewInput: boolean =
   core.getInput("on-failed-regex-create-review") === "true";
 const onFailedRegexCommentInput: string = core.getInput(
@@ -25,7 +28,7 @@ async function run(): Promise<void> {
   const pullRequest = githubContext.issue;
 
   const body: string = githubContext.payload.pull_request?.body ?? "";
-  const bodyRegex = new RegExp(bodyRegexInput);
+  const bodyRegex = new RegExp(bodyRegexInput, bodyRegexFlagsInput);
   const comment = onFailedRegexCommentInput.replace(
     "%regex%",
     bodyRegex.source
